@@ -86,5 +86,6 @@ outputs/metrics/
 # Large Dataset (Optional)
 # Uncomment if you don't want to upload datasets
 # ==============================
-# data/raw/
-# data/proc
+data/raw/
+data/processed/
+
