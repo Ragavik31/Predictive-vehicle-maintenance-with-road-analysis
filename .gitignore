@@ -86,6 +86,6 @@ outputs/metrics/
 # Large Dataset (Optional)
 # Uncomment if you don't want to upload datasets
 # ==============================
-data/raw/
-data/processed/
-
+Model/data/raw/
+Model/data/processed/
+*.csv
