@@ -1,262 +1,220 @@
 # 🚛 Predictive Vehicle Maintenance with Road Analysis using Machine Learning
 
-An AI-powered predictive maintenance system that combines vehicle operational data, maintenance history, environmental conditions, and road analysis to predict maintenance requirements before failures occur.
+An end-to-end AI-powered predictive maintenance system that combines vehicle operational data, diagnostic metrics, weather conditions, and road-condition analysis to predict maintenance requirements for logistics fleet vehicles before catastrophic failures occur.
 
 ---
 
 ## 📖 Project Overview
 
-Unexpected vehicle failures increase maintenance costs, vehicle downtime, and operational risks, especially in commercial logistics fleets. Traditional maintenance strategies rely on fixed service schedules or mileage intervals, often leading to unnecessary servicing or delayed maintenance.
+Unexpected vehicle failures increase operational costs, vehicle downtime, and safety risks in commercial logistics fleets. Traditional maintenance strategies rely on fixed mileage intervals or reactive repairs, leading to either premature servicing or unscheduled breakdowns.
 
-This project proposes a **Machine Learning-based Predictive Maintenance System** that analyzes historical maintenance records, vehicle health parameters, operational conditions, and road information to predict whether a vehicle requires maintenance. The proposed framework also compares model performance on the original dataset and a SMOTE-balanced dataset to improve prediction reliability.
-
----
-
-## 🎯 Problem Statement
-
-Current predictive maintenance systems primarily depend on vehicle operational and historical maintenance data while giving limited consideration to environmental factors and road conditions.
-
-This project addresses these limitations by:
-
-- Predicting maintenance requirements before failures occur.
-- Studying the influence of operational and environmental conditions.
-- Comparing machine learning models with and without SMOTE.
-- Building a robust predictive maintenance pipeline suitable for logistics fleet vehicles.
+This project implements a **Soft Voting Ensemble Machine Learning Architecture** that combines four diverse base estimators—**Logistic Regression**, **Random Forest**, **XGBoost**, and **LightGBM**—trained on SMOTE-balanced logistics data. The system provides real-time maintenance prediction probabilities, risk levels, **SHAP Explainable AI** feature contributions, and automated component-level inspection recommendations via a **FastAPI backend** and a modern **React/TypeScript web application**.
 
 ---
 
-## 🎯 Objectives
-
-- Analyze logistics fleet maintenance data.
-- Perform exploratory data analysis and feature engineering.
-- Identify and remove feature leakage.
-- Compare machine learning models using original and SMOTE-balanced datasets.
-- Predict whether maintenance is required.
-- Evaluate model performance using multiple evaluation metrics.
-- Prepare the model for future deployment.
-
----
-
-# 🚀 Key Features
-
-- 🚚 Logistics Fleet Vehicle Maintenance Prediction
-- 📊 Exploratory Data Analysis (EDA)
-- 🔍 Feature Leakage Detection
-- ⚖️ Class Imbalance Analysis using SMOTE
-- 🤖 Multiple Machine Learning Models
-- 📈 Comprehensive Model Evaluation
-- 💾 Model Serialization using Joblib
-- 🌐 Ready for Future Web Deployment
-
----
-
-# 🏗 Project Workflow
+## 🏗 System Architecture Flow
 
 ```text
-               Logistics Vehicle Dataset
-                         │
-                         ▼
-              Dataset Understanding
-                         │
-                         ▼
-        Exploratory Data Analysis (EDA)
-                         │
-                         ▼
-          Feature Leakage Identification
-                         │
-                         ▼
-              Feature Selection
-                         │
-                         ▼
-             Data Preprocessing
-                         │
-                         ▼
-            Train-Test Split (80:20)
-                         │
-          ┌──────────────┴──────────────┐
-          ▼                             ▼
-   Original Dataset              SMOTE Dataset
-          │                             │
-          ▼                             ▼
-   Machine Learning Models      Machine Learning Models
-          │                             │
-          └──────────────┬──────────────┘
-                         ▼
-                 Model Evaluation
-                         │
-                         ▼
-              Hyperparameter Tuning
-                         │
-                         ▼
-                Best Model Selection
-                         │
-                         ▼
-                Model Deployment
+                     Logistics Fleet Dataset (250,000 Records)
+                                        │
+                                        ▼
+                             Notebook 01 — EDA
+                                        │
+                                        ▼
+                   Notebook 02 — Data Preprocessing
+                                        │
+                                        ▼
+             Notebook 03 — Feature Leakage Analysis
+                                        │
+                                        ▼
+                    Notebook 04 — Feature Selection
+                                        │
+                                        ▼
+          Notebook 05 — Train-Test Split (80% Train / 20% Test)
+                                        │
+             ┌──────────────────────────┴──────────────────────────┐
+             │ (Train Set Only)                                    │ (Untouched Test Set)
+             ▼                                                     │
+Notebook 06 — SMOTE Balancing                                      │
+             │                                                     │
+             ▼                                                     │
+Notebook 07 — Base Model Training                                  │
+  ├── Logistic Regression                                          │
+  ├── Random Forest                                                │
+  ├── XGBoost                                                      │
+  └── LightGBM                                                     │
+             │                                                     │
+             └──────────────────────────┬──────────────────────────┘
+                                        ▼
+                     Notebook 08 — Soft Voting Ensemble
+                       (VotingClassifier: voting='soft')
+                                        │
+                                        ▼
+              Notebook 09 — Model Evaluation & Comparison
+             (Evaluates 7 Models on Untouched Test Set)
+                                        │
+                                        ▼
+             Notebook 10 — Final Prediction & SHAP Engine
+               (Risk Level & Recommended Inspection Areas)
+                                        │
+                    ┌───────────────────┴───────────────────┐
+                    ▼                                       ▼
+          Backend FastAPI API                     RoadMind AI Web App
+           (POST /api/predict)                  (React / TypeScript UI)
 ```
 
 ---
 
-# ⚙️ Methodology
+## 🎯 Key Objectives & Scope
 
-### 1️⃣ Dataset Collection
-
-- Logistics Vehicle Maintenance History Dataset
-- Source: Kaggle
-- 250,000 Records
-- 50 Features
-
-### 2️⃣ Dataset Understanding
-
-- Missing Value Analysis
-- Duplicate Detection
-- Data Type Analysis
-- Statistical Summary
-
-### 3️⃣ Exploratory Data Analysis
-
-- Feature Distribution
-- Correlation Analysis
-- Class Distribution
-- Outlier Detection
-
-### 4️⃣ Feature Leakage Analysis
-
-Identify and remove features that may unintentionally reveal the target variable.
-
-### 5️⃣ Feature Selection
-
-Remove irrelevant and redundant variables to improve model performance.
-
-### 6️⃣ Data Preprocessing
-
-- Label Encoding
-- One-Hot Encoding
-- Feature Scaling (where required)
-
-### 7️⃣ Model Development
-
-Experiments performed:
-
-- Original Dataset
-- SMOTE Balanced Dataset
-
-Models:
-
-- Logistic Regression
-- Decision Tree
-- Random Forest
-- XGBoost
-
-### 8️⃣ Model Evaluation
-
-Evaluation Metrics:
-
-- Accuracy
-- Precision
-- Recall
-- F1 Score
-- ROC-AUC
-- Confusion Matrix
-
-### 9️⃣ Hyperparameter Optimization
-
-Improve the best-performing model using parameter tuning.
-
-### 🔟 Deployment
-
-Save the final trained model using **Joblib** for future web application integration.
+- **End-to-End Pipeline**: From raw data exploratory analysis to a deployed web interface.
+- **Leakage-Free Feature Set**: Rigorous feature leakage removal ensuring realistic predictions.
+- **Strict Data Integrity**: SMOTE data balancing applied exclusively to training data; test set remains untouched.
+- **Soft Voting Ensemble**: Combines four base learners (**Logistic Regression**, **Random Forest**, **XGBoost**, **LightGBM**) using probability averaging (`voting='soft'`). No separate hyperparameter tuning stage.
+- **Explainable AI (SHAP)**: Uses model-agnostic SHAP values to explain feature contributions for every vehicle prediction.
+- **Actionable Inspections**: Translates feature contributions into targeted vehicle component inspection recommendations.
+- **Web & Backend Deployment**: FastAPI microservice serving real-time predictions to an interactive logistics fleet dashboard.
 
 ---
 
-# 📂 Dataset
+## 📚 Notebook Structure (10 Notebooks)
 
-| Attribute | Value |
-|-----------|-------|
-| Source | Kaggle |
-| Domain | Logistics Fleet Predictive Maintenance |
-| Records | 250,000 |
-| Features | 50 |
-| Target | Maintenance_Required |
-
-### Vehicle Types
-
-- 🚚 Heavy Truck
-- 🚛 Medium Truck
-- 🚐 Light Truck
-- ❄️ Refrigerated Truck
-- ⚡ Electric Truck
-
-### Feature Categories
-
-- Vehicle Information
-- Operational Data
-- Environmental Conditions
-- Vehicle Health Parameters
-- Maintenance History
-- Telematics Data
+| Notebook | Title | Key Output / Description |
+|---|---|---|
+| **01** | [01_EDA.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/01_EDA.ipynb) | Exploratory Data Analysis, missing values, duplicates, class distribution (`Maintenance_Required`), correlation matrix, and outlier analysis. |
+| **02** | [02_Preprocessing.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/02_Preprocessing.ipynb) | Categorical variable encoding, timestamp processing, scaling, and transformation saved to `preprocessed_dataset.csv`. |
+| **03** | [03_Feature_Leakage_Analysis.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/03_Feature_Leakage_Analysis.ipynb) | Target-leakage identification and removal. Saves `leakage_free_dataset.csv`. |
+| **04** | [04_Feature_Selection.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/04_Feature_Selection.ipynb) | Random Forest feature importance ranking; selects top 20 predictive features used uniformly across all models. Saves `final_selected_dataset.csv`. |
+| **05** | [05_Train_Test_Split_Without_SMOTE.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/05_Train_Test_Split_Without_SMOTE.ipynb) | 80/20 stratified split. Evaluates baseline untuned models. Saves untouched `train_dataset.csv` and `test_dataset.csv`. |
+| **06** | [06_SMOTE_Balancing.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/06_SMOTE_Balancing.ipynb) | Applies SMOTE strictly to training data (`X_train_smote`, `y_train_smote`). Test data remains untouched. |
+| **07** | [07_Model_Training_With_SMOTE.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/07_Model_Training_With_SMOTE.ipynb) | Trains the four base learners (LR, RF, XGB, LightGBM) with fixed default parameters on SMOTE training data. Saves individual model artifacts (`logistic_regression_smote.pkl`, `random_forest_smote.pkl`, `xgboost_smote.pkl`, `lightgbm_smote.pkl`). |
+| **08** | [08_Ensemble_Learning.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/08_Ensemble_Learning.ipynb) | **PRIMARY ARCHITECTURE**: Combines all four base models into a `VotingClassifier(voting='soft')`. Saves `voting_ensemble_model.pkl`, `final_stacking_model.pkl`, and `easy_ensemble_model.pkl`. |
+| **09** | [09_Model_Evaluation_and_Comparison.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/09_Model_Evaluation_and_Comparison.ipynb) | Evaluates all 7 candidate models on untouched test set. Produces evaluation tables (`final_model_comparison.csv`), ROC curves, and confusion matrix. Declares **Soft Voting Ensemble** as final architecture. |
+| **10** | [10_Final_Model_SHAP_and_Maintenance_Recommendation.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/10_Final_Model_SHAP_and_Maintenance_Recommendation.ipynb) | Deploys `voting_ensemble_model.pkl`. Generates predictions, probability outputs, risk level classification, SHAP explanations, and maintenance inspection checklists. |
 
 ---
 
-# 🛠 Technology Stack
+## 📊 Model Evaluation Results (Test Set)
 
-| Category | Tools |
-|----------|-------|
-| Programming | Python |
-| Data Processing | Pandas, NumPy |
-| Machine Learning | Scikit-learn, XGBoost |
-| Data Balancing | SMOTE |
-| Visualization | Matplotlib, Seaborn |
-| Model Storage | Joblib |
-| Development | Google Colab |
+All seven model variations were evaluated on the exact same untouched test set:
 
----
+| Model | Accuracy | Precision | Recall | F1 Score | ROC-AUC |
+|---|---|---|---|---|---|
+| **Logistic Regression** | 0.94044 | 0.93986 | 0.87182 | 0.90456 | 0.92315 |
+| **Soft Voting Ensemble** *(Final Architecture)* | **0.94036** | **0.93938** | **0.87207** | **0.90447** | **0.92478** |
+| **Random Forest** | 0.93992 | 0.93748 | 0.87262 | 0.90389 | 0.92474 |
+| **XGBoost** | 0.93860 | 0.93368 | 0.87231 | 0.90195 | 0.92489 |
+| **LightGBM** | 0.93842 | 0.93301 | 0.87244 | 0.90171 | 0.92485 |
+| **Stacking Ensemble** | 0.93842 | 0.93261 | 0.87287 | 0.90175 | 0.92455 |
+| **Easy Ensemble** | 0.93806 | 0.93236 | 0.87194 | 0.90114 | 0.92392 |
 
-# 📊 Evaluation Metrics
-
-The developed models are evaluated using:
-
-- Accuracy
-- Precision
-- Recall
-- F1-Score
-- ROC-AUC
-- Confusion Matrix
+> **Architectural Selection Rationale**: The **Soft Voting Ensemble** combines the complementary strengths of linear modeling and non-linear decision trees (Logistic Regression + Random Forest + XGBoost + LightGBM), delivering balanced, highly reliable maintenance risk predictions with **94.04% Accuracy** and **0.9248 ROC-AUC**.
 
 ---
 
-# 📚 References
+## 🧠 Explainable AI & Maintenance Recommendations
 
-### Base Paper
-
-Mahiyudin, G., Hussain, M., & Dewi, D. D.
-
-*A Comprehensive Study on Predicting the Need for Vehicle Maintenance Using Machine Learning.*
-
-Engineering Proceedings, 2025.
-
-### Related Papers
-
-- Predictive Maintenance Enabled by Machine Learning: Use Cases and Challenges in the Automotive Industry (2021)
-
-- Machine Learning Applications in Predictive Maintenance for Vehicles: Case Studies (2022)
-
-- Predictive Maintenance of Armoured Vehicles Using Machine Learning Approaches (2023)
-
----
-
-# 🚀 Future Scope
-
-- Real-time OBD-II integration
-- Live telematics data
-- Road image analysis using Computer Vision
-- Explainable AI (SHAP/LIME)
-- Fleet Management Dashboard
-- Mobile & Web Deployment
+For each vehicle analysis, the system:
+1. Calculates prediction probability $P(\text{Maintenance Required})$.
+2. Categorizes **Risk Level**:
+   - **Low**: Probability < 40%
+   - **Medium**: 40% ≤ Probability < 70%
+   - **High**: Probability ≥ 70%
+3. Generates **SHAP Feature Contributions** quantifying the impact of each telemetry feature.
+4. Generates **Recommended Inspection Areas**:
+   - Elevated `Engine_Temperature` $\rightarrow$ Inspect engine cooling system, radiator, and coolant levels.
+   - High `Vibration_Levels` $\rightarrow$ Inspect engine mounts, driveshaft, and mechanical vibration components.
+   - Low `Oil_Quality` $\rightarrow$ Inspect engine oil quality, oil filter, and consider oil servicing.
+   - Low `Battery_Status` $\rightarrow$ Inspect battery charge, terminal contacts, and electrical alternator.
+   - Low `Tire_Pressure` $\rightarrow$ Inspect tire pressure, tread wear, and wheel alignment.
+   - DTC / Anomaly / CAN Bus counters $\rightarrow$ Perform full OBD-II / CAN bus diagnostic scan.
 
 ---
 
-# 👩‍💻 Authors
+## 🛠 Technology Stack
+
+| Category | Technologies / Libraries |
+|---|---|
+| **Programming Language** | Python 3.10+, TypeScript |
+| **Machine Learning** | Scikit-learn, XGBoost, LightGBM, Imbalanced-learn |
+| **Explainable AI (XAI)** | SHAP (Shapley Additive exPlanations) |
+| **Data Science & Math** | Pandas, NumPy, Joblib |
+| **Data Visualization** | Matplotlib, Seaborn |
+| **Backend API** | FastAPI, Uvicorn, Pydantic |
+| **Frontend Framework** | React 18, Vite, Tailwind CSS, Lucide Icons |
+
+---
+
+## 💻 Project Structure
+
+```text
+Predictive-vehicle-maintenance-with-road-analysis/
+├── Model/
+│   ├── 01_EDA.ipynb
+│   ├── 02_Preprocessing.ipynb
+│   ├── 03_Feature_Leakage_Analysis.ipynb
+│   ├── 04_Feature_Selection.ipynb
+│   ├── 05_Train_Test_Split_Without_SMOTE.ipynb
+│   ├── 06_SMOTE_Balancing.ipynb
+│   ├── 07_Model_Training_With_SMOTE.ipynb
+│   ├── 08_Ensemble_Learning.ipynb
+│   ├── 09_Model_Evaluation_and_Comparison.ipynb
+│   ├── 10_Final_Model_SHAP_and_Maintenance_Recommendation.ipynb
+│   ├── data/
+│   │   ├── raw/
+│   │   └── processed/
+│   ├── models/
+│   │   └── voting_ensemble_model.pkl
+│   └── results/
+│       └── final_model_comparison.csv
+├── backend/
+│   ├── main.py
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── types/
+│   └── package.json
+└── README.md
+```
+
+---
+
+## 🚦 How to Run the Project
+
+### 1. Run Machine Learning Pipeline
+```bash
+cd Model
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+# Run notebooks 01 through 10 in Jupyter or VS Code
+```
+
+### 2. Start Backend API Service
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+# API running at http://localhost:8000 (Docs at http://localhost:8000/docs)
+```
+
+### 3. Start Frontend Web Application
+```bash
+cd frontend
+npm install
+npm run dev
+# Web App running at http://localhost:5173
+```
+
+---
+
+## 👩‍💻 Authors
 
 - **Ragavi K**
 - **Medhuna P**
 - **Praveena S**
+
