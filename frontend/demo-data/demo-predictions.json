@@ -1,0 +1,7 @@
+{
+  "note": "Illustrative demo outputs; replace with exported model predictions.",
+  "predictions": [
+    {"risk": 0.86, "label": "Maintenance likely", "shapLike": [0.57,0.5,0.42,0.2,0.79,0.8]},
+    {"risk": 0.18, "label": "No immediate maintenance", "shapLike": [-0.3,-0.88,-0.7,-0.5,-0.89,-0.8]}
+  ]
+}

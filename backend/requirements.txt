@@ -1,0 +1,6 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7,<3
+joblib
+scikit-learn
+shap>=0.46.0
