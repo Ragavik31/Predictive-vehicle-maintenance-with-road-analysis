@@ -12,58 +12,44 @@ This project implements a **Soft Voting Ensemble Machine Learning Architecture**
 
 ---
 
-## 🏗 System Architecture Flow
+## 🏗 Final Project Architecture
 
 ```text
-                     Logistics Fleet Dataset (250,000 Records)
-                                        │
-                                        ▼
-                             Notebook 01 — EDA
-                                        │
-                                        ▼
-                   Notebook 02 — Data Preprocessing
-                                        │
-                                        ▼
-             Notebook 03 — Feature Leakage Analysis
-                                        │
-                                        ▼
-                    Notebook 04 — Feature Selection
-                                        │
-                                        ▼
-          Notebook 05 — Train-Test Split (80% Train / 20% Test)
-                                        │
-             ┌──────────────────────────┴──────────────────────────┐
-             │ (Train Set Only)                                    │ (Untouched Test Set)
-             ▼                                                     │
-Notebook 06 — SMOTE Balancing                                      │
-             │                                                     │
-             ▼                                                     │
-Notebook 07 — Base Model Training                                  │
-  ├── Logistic Regression                                          │
-  ├── Random Forest                                                │
-  ├── XGBoost                                                      │
-  └── LightGBM                                                     │
-             │                                                     │
-             └──────────────────────────┬──────────────────────────┘
-                                        ▼
-                     Notebook 08 — Soft Voting Ensemble
-                       (VotingClassifier: voting='soft')
-                                        │
-                                        ▼
-              Notebook 09 — Model Evaluation & Comparison
-             (Evaluates 7 Models on Untouched Test Set)
-                                        │
-                                        ▼
-             Notebook 10 — Final Prediction & SHAP Engine
-               (Risk Level & Recommended Inspection Areas)
-                                        │
-                    ┌───────────────────┴───────────────────┐
-                    ▼                                       ▼
-          Backend FastAPI API                     RoadMind AI Web App
-           (POST /api/predict)                  (React / TypeScript UI)
+Logistics Fleet Dataset
+        ↓
+EDA
+        ↓
+Preprocessing
+        ↓
+Feature Leakage Analysis
+        ↓
+Feature Selection
+        ↓
+Train-Test Split (80% Train / 20% Test)
+        ↓
+SMOTE (Applied to Training Data Only)
+        ↓
+Train Four Base Models
+    ├── Logistic Regression
+    ├── Random Forest
+    ├── XGBoost
+    └── LightGBM
+        ↓
+Soft Voting Ensemble (voting='soft')
+        ↓
+Final Maintenance Prediction
+        ↓
+SHAP / Explainable AI
+        ↓
+Maintenance Risk Explanation
+        ↓
+Recommended Inspection
+        ↓
+Backend API (FastAPI)
+        ↓
+RoadMind AI Fleet Web Application
 ```
 
----
 
 ## 🎯 Key Objectives & Scope
 
@@ -77,24 +63,7 @@ Notebook 07 — Base Model Training                                  │
 
 ---
 
-## 📚 Notebook Structure (10 Notebooks)
-
-| Notebook | Title | Key Output / Description |
-|---|---|---|
-| **01** | [01_EDA.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/01_EDA.ipynb) | Exploratory Data Analysis, missing values, duplicates, class distribution (`Maintenance_Required`), correlation matrix, and outlier analysis. |
-| **02** | [02_Preprocessing.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/02_Preprocessing.ipynb) | Categorical variable encoding, timestamp processing, scaling, and transformation saved to `preprocessed_dataset.csv`. |
-| **03** | [03_Feature_Leakage_Analysis.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/03_Feature_Leakage_Analysis.ipynb) | Target-leakage identification and removal. Saves `leakage_free_dataset.csv`. |
-| **04** | [04_Feature_Selection.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/04_Feature_Selection.ipynb) | Random Forest feature importance ranking; selects top 20 predictive features used uniformly across all models. Saves `final_selected_dataset.csv`. |
-| **05** | [05_Train_Test_Split_Without_SMOTE.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/05_Train_Test_Split_Without_SMOTE.ipynb) | 80/20 stratified split. Evaluates baseline untuned models. Saves untouched `train_dataset.csv` and `test_dataset.csv`. |
-| **06** | [06_SMOTE_Balancing.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/06_SMOTE_Balancing.ipynb) | Applies SMOTE strictly to training data (`X_train_smote`, `y_train_smote`). Test data remains untouched. |
-| **07** | [07_Model_Training_With_SMOTE.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/07_Model_Training_With_SMOTE.ipynb) | Trains the four base learners (LR, RF, XGB, LightGBM) with fixed default parameters on SMOTE training data. Saves individual model artifacts (`logistic_regression_smote.pkl`, `random_forest_smote.pkl`, `xgboost_smote.pkl`, `lightgbm_smote.pkl`). |
-| **08** | [08_Ensemble_Learning.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/08_Ensemble_Learning.ipynb) | **PRIMARY ARCHITECTURE**: Combines all four base models into a `VotingClassifier(voting='soft')`. Saves `voting_ensemble_model.pkl`, `final_stacking_model.pkl`, and `easy_ensemble_model.pkl`. |
-| **09** | [09_Model_Evaluation_and_Comparison.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/09_Model_Evaluation_and_Comparison.ipynb) | Evaluates all 7 candidate models on untouched test set. Produces evaluation tables (`final_model_comparison.csv`), ROC curves, and confusion matrix. Declares **Soft Voting Ensemble** as final architecture. |
-| **10** | [10_Final_Model_SHAP_and_Maintenance_Recommendation.ipynb](file:///e:/Predictive-vehicle-maintenance-with-road-analysis/Model/10_Final_Model_SHAP_and_Maintenance_Recommendation.ipynb) | Deploys `voting_ensemble_model.pkl`. Generates predictions, probability outputs, risk level classification, SHAP explanations, and maintenance inspection checklists. |
-
----
-
-## 📊 Model Evaluation Results (Test Set)
+##  Model Evaluation Results (Test Set)
 
 All seven model variations were evaluated on the exact same untouched test set:
 
@@ -150,23 +119,14 @@ For each vehicle analysis, the system:
 ```text
 Predictive-vehicle-maintenance-with-road-analysis/
 ├── Model/
-│   ├── 01_EDA.ipynb
-│   ├── 02_Preprocessing.ipynb
-│   ├── 03_Feature_Leakage_Analysis.ipynb
-│   ├── 04_Feature_Selection.ipynb
-│   ├── 05_Train_Test_Split_Without_SMOTE.ipynb
-│   ├── 06_SMOTE_Balancing.ipynb
-│   ├── 07_Model_Training_With_SMOTE.ipynb
-│   ├── 08_Ensemble_Learning.ipynb
-│   ├── 09_Model_Evaluation_and_Comparison.ipynb
-│   ├── 10_Final_Model_SHAP_and_Maintenance_Recommendation.ipynb
 │   ├── data/
 │   │   ├── raw/
 │   │   └── processed/
 │   ├── models/
 │   │   └── voting_ensemble_model.pkl
-│   └── results/
-│       └── final_model_comparison.csv
+│   ├── results/
+│   │   └── final_model_comparison.csv
+│   └── notebooks/
 ├── backend/
 │   ├── main.py
 │   └── requirements.txt
@@ -176,7 +136,9 @@ Predictive-vehicle-maintenance-with-road-analysis/
 │   │   ├── pages/
 │   │   └── types/
 │   └── package.json
-└── README.md
+├── Documentation/
+├── README.md
+└── Reference/
 ```
 
 ---
