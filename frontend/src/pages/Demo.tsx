@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { parseDemoCsv } from '../lib/csv';
-import { predictWithModel } from '../lib/model';
-import { sampleRows, sampleCsv } from '../data/demo';
-import type { DemoInput, Prediction } from '../types';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { sampleRows } from '../data/demo';
+import type { DemoInput } from '../types';
 
 type Field = { key: keyof DemoInput; label: string; min: number; max: number; step: number; unit: string; options?: { value: number; label: string }[] };
 
@@ -18,134 +16,190 @@ const categories = {
 const optionsFor = (values: string[]) => values.map((label, value) => ({ value, label }));
 
 const fields: Field[] = [
-  { key: 'makeAndModel', label: 'Make and model', min: 0, max: 7, step: 1, unit: '', options: optionsFor(categories.makeAndModel) },
-  { key: 'vehicleType', label: 'Vehicle type', min: 0, max: 4, step: 1, unit: '', options: optionsFor(categories.vehicleType) },
-  { key: 'yearOfManufacture', label: 'Year of manufacture', min: 1900, max: 2100, step: 1, unit: 'year' },
-  { key: 'roadConditions', label: 'Road conditions', min: 0, max: 4, step: 1, unit: '', options: optionsFor(categories.roadConditions) },
-  { key: 'weatherConditions', label: 'Weather conditions', min: 0, max: 5, step: 1, unit: '', options: optionsFor(categories.weatherConditions) },
-  { key: 'routeInfo', label: 'Route info', min: 0, max: 4, step: 1, unit: '', options: optionsFor(categories.routeInfo) },
-  { key: 'usageHours', label: 'Usage hours', min: 0, max: 30000, step: 100, unit: 'hours' },
-  { key: 'loadCapacity', label: 'Load capacity', min: 0, max: 30000, step: 100, unit: 'kg' },
-  { key: 'actualLoad', label: 'Actual load', min: 0, max: 30000, step: 100, unit: 'kg' },
-  { key: 'engineTemp', label: 'Engine temperature', min: 60, max: 120, step: 1, unit: 'C' },
-  { key: 'fuelConsumption', label: 'Fuel consumption', min: 0, max: 20, step: 0.1, unit: 'L/100 km' },
-  { key: 'batteryStatus', label: 'Battery status', min: 0, max: 120, step: 1, unit: '%' },
-  { key: 'oilQuality', label: 'Oil quality', min: 0, max: 120, step: 1, unit: 'score' },
-  { key: 'vibration', label: 'Vibration levels', min: 0, max: 8, step: 0.1, unit: 'RMS' },
-  { key: 'tirePressure', label: 'Tire pressure', min: 0, max: 80, step: 0.1, unit: 'psi' },
-  { key: 'failureHistory', label: 'Failure history', min: 0, max: 10, step: 0.1, unit: 'count' },
-  { key: 'anomaliesDetected', label: 'Anomalies detected', min: 0, max: 10, step: 0.1, unit: 'count' },
-  { key: 'diagnosticTroubleCodeCount', label: 'Diagnostic trouble codes', min: 0, max: 10, step: 1, unit: 'count' },
-  { key: 'canMessageRateHz', label: 'CAN message rate', min: 0, max: 100, step: 0.1, unit: 'Hz' },
-  { key: 'sensorPacketLossRate', label: 'Sensor packet loss', min: 0, max: 1, step: 0.001, unit: 'rate' },
+  { key: 'makeAndModel', label: 'Make & Model', min: 0, max: 7, step: 1, unit: '', options: optionsFor(categories.makeAndModel) },
+  { key: 'vehicleType', label: 'Vehicle Type', min: 0, max: 4, step: 1, unit: '', options: optionsFor(categories.vehicleType) },
+  { key: 'yearOfManufacture', label: 'Year', min: 2012, max: 2026, step: 1, unit: '' },
+  { key: 'roadConditions', label: 'Road Condition', min: 0, max: 4, step: 1, unit: '', options: optionsFor(categories.roadConditions) },
+  { key: 'weatherConditions', label: 'Weather Impact', min: 0, max: 5, step: 1, unit: '', options: optionsFor(categories.weatherConditions) },
+  { key: 'routeInfo', label: 'Route Classification', min: 0, max: 4, step: 1, unit: '', options: optionsFor(categories.routeInfo) },
+  { key: 'usageHours', label: 'Engine Operating Hours', min: 0, max: 30000, step: 100, unit: 'hrs' },
+  { key: 'loadCapacity', label: 'Rated Capacity', min: 0, max: 30000, step: 100, unit: 'kg' },
+  { key: 'actualLoad', label: 'Actual Payload Weight', min: 0, max: 30000, step: 100, unit: 'kg' },
+  { key: 'engineTemp', label: 'Coolant Temp', min: 60, max: 120, step: 1, unit: '°C' },
+  { key: 'fuelConsumption', label: 'Fuel Consumption', min: 0, max: 20, step: 0.1, unit: 'L/100km' },
+  { key: 'batteryStatus', label: 'Battery Health', min: 0, max: 120, step: 1, unit: '%' },
+  { key: 'oilQuality', label: 'Oil Quality Index', min: 0, max: 120, step: 1, unit: 'pts' },
+  { key: 'vibration', label: 'Chassis Vibration', min: 0, max: 8, step: 0.1, unit: 'RMS' },
+  { key: 'tirePressure', label: 'Tire Pressure', min: 0, max: 80, step: 0.1, unit: 'PSI' },
+  { key: 'failureHistory', label: 'Past Failure Incidents', min: 0, max: 10, step: 1, unit: 'events' },
+  { key: 'anomaliesDetected', label: 'Sensor Anomalies', min: 0, max: 10, step: 1, unit: 'alerts' },
+  { key: 'diagnosticTroubleCodeCount', label: 'DTC Code Count', min: 0, max: 10, step: 1, unit: 'codes' },
+  { key: 'canMessageRateHz', label: 'CAN Bus Message Rate', min: 0, max: 100, step: 0.1, unit: 'Hz' },
+  { key: 'sensorPacketLossRate', label: 'Sensor Loss Rate', min: 0, max: 1, step: 0.001, unit: 'ratio' },
 ];
 
-const emptyPrediction: Prediction = {
-  label: 'No immediate maintenance',
-  probability: 0,
-  contributions: [],
-};
-
 export default function Demo() {
-  const [input, setInput] = useState(sampleRows[0]);
-  const [error, setError] = useState('');
-  const [result, setResult] = useState<Prediction | null>(null);
+  const navigate = useNavigate();
+  const [customInput, setCustomInput] = useState<DemoInput>(sampleRows[0]);
+  const [showCustomDrawer, setShowCustomDrawer] = useState<boolean>(false);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const timer = window.setTimeout(() => {
-      predictWithModel(input, controller.signal)
-        .then((prediction) => {
-          setResult(prediction);
-          setError('');
-        })
-        .catch((requestError) => {
-          if (requestError.name !== 'AbortError') {
-            setError(requestError instanceof Error ? requestError.message : 'Unable to reach the prediction service.');
-          }
-        });
-    }, 250);
-    return () => {
-      window.clearTimeout(timer);
-      controller.abort();
-    };
-  }, [input]);
+  const updateCustom = (key: keyof DemoInput, value: number) => setCustomInput((cur) => ({ ...cur, [key]: value }));
 
-  const update = (key: keyof DemoInput, value: number) => setInput((current) => ({ ...current, [key]: value }));
-  const onFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setError('');
-    const file = event.target.files?.[0];
-    if (!file) return;
-    try {
-      const rows = await parseDemoCsv(file);
-      setInput(rows[0]);
-    } catch (fileError) {
-      setError(fileError instanceof Error ? fileError.message : 'Unable to read CSV.');
-    }
+  const launchDiagnosticReport = (inputPayload: DemoInput, name: string) => {
+    navigate('/vehicle-analysis/report', {
+      state: { input: inputPayload, vehicleName: name }
+    });
   };
 
-  const displayedResult = result ?? emptyPrediction;
+  const presetCards = [
+    {
+      id: 'VH-2841',
+      name: 'Volvo FH16 (Heavy Hauler)',
+      desc: 'Standard highway cargo haul under baseline operating parameters.',
+      route: 'Interstate 95 Express Corridor',
+      badge: 'Baseline Operational',
+      badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      icon: '🚚',
+      input: sampleRows[0],
+    },
+    {
+      id: 'VH-2850',
+      name: 'MAN TGX (Refrigerated Transport)',
+      desc: 'Elevated engine coolant temperature (108°C) under heavy thermal load.',
+      route: 'Trans-Mountain Alpine Pass',
+      badge: '🔥 Overheating Critical Alert',
+      badgeColor: 'bg-red-50 text-red-700 border-red-200',
+      icon: '⚠️',
+      input: { ...sampleRows[0], engineTemp: 108, oilQuality: 35 },
+    },
+    {
+      id: 'VH-2855',
+      name: 'Isuzu Giga (Dump Heavy Truck)',
+      desc: 'Severe chassis vibration (5.8 RMS) and rough unpaved terrain stress.',
+      route: 'Quarry Access Off-Road',
+      badge: '🛣️ High Roughness Stress',
+      badgeColor: 'bg-amber-50 text-amber-800 border-amber-200',
+      icon: '📉',
+      input: { ...sampleRows[0], vibration: 5.8, roadConditions: 4 },
+    },
+    {
+      id: 'VH-2838',
+      name: 'Scania R500 (Long Haul Semi)',
+      desc: 'Multiple active CAN diagnostic trouble codes (DTC) & sensor packet loss.',
+      route: 'Northern Logistics Loop',
+      badge: '⚡ Electrical DTC Alert',
+      badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
+      icon: '🔧',
+      input: { ...sampleRows[0], diagnosticTroubleCodeCount: 4, sensorPacketLossRate: 0.08 },
+    },
+  ];
 
   return (
-    <section className="mx-auto max-w-7xl px-5 py-12 sm:py-16">
-      <div className="max-w-3xl">
-        <div className="text-xs font-semibold uppercase tracking-[.18em] text-teal-300">Vehicle Analysis</div>
-        <h1 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">Live maintenance prediction</h1>
-        <p className="mt-4 text-slate-400">Enter all 20 features used by the trained model. Results update automatically through the prediction service.</p>
+    <div className="space-y-6 max-w-6xl">
+      {/* Compact Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Vehicle Diagnostic Hub</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Select a vehicle profile or launch a custom telemetry scan to generate a full diagnostic report.</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowCustomDrawer(!showCustomDrawer)}
+          className="focus-ring inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-xs hover:bg-slate-50 transition-all"
+        >
+          <span>⚙️</span>
+          <span>{showCustomDrawer ? 'Hide Telemetry Builder' : 'Configure Custom Telemetry'}</span>
+        </button>
       </div>
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-[1.15fr_.85fr]">
-        <div className="card p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-semibold text-white">Model inputs</h2>
-            <button type="button" onClick={() => setInput(sampleRows[0])} className="focus-ring rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300 hover:bg-slate-800">
-              Load sample
+      {/* Collapsible Custom Telemetry Builder */}
+      {showCustomDrawer && (
+        <div className="card p-6 bg-white border border-blue-200 shadow-md animate-fade-up space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h2 className="font-bold text-slate-900 text-base">Custom Vehicle Telemetry Parameters</h2>
+              <p className="text-xs text-slate-500">Adjust any of the 20 CAN bus inputs below before launching your diagnostic scan.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => launchDiagnosticReport(customInput, 'Custom Vehicle Scan')}
+              className="focus-ring inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-blue-700 transition-colors"
+            >
+              <span>⚡ Launch Custom Scan →</span>
             </button>
           </div>
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 max-h-[380px] overflow-y-auto pr-1">
             {fields.map((field) => (
-              <label key={field.key} className="block">
-                <span className="flex justify-between gap-3 text-xs text-slate-400">
-                  <span>{field.label}</span>
-                  <span>{field.options?.find((option) => option.value === input[field.key])?.label ?? `${input[field.key]} ${field.unit}`}</span>
-                </span>
+              <div key={field.key} className="rounded-lg border border-slate-200/80 bg-slate-50/60 p-2.5">
+                <div className="flex justify-between items-center text-xs mb-1">
+                  <span className="font-bold text-slate-800 text-[11px]">{field.label}</span>
+                  <span className="font-mono text-[11px] font-bold text-blue-600">
+                    {field.options?.find((o) => o.value === customInput[field.key])?.label ?? `${customInput[field.key]} ${field.unit}`}
+                  </span>
+                </div>
+
                 {field.options ? (
-                  <select className="focus-ring mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200" value={input[field.key]} onChange={(event) => update(field.key, Number(event.target.value))}>
-                    {field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                  <select
+                    className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-800 focus:border-blue-500 focus:outline-none"
+                    value={customInput[field.key]}
+                    onChange={(e) => updateCustom(field.key, Number(e.target.value))}
+                  >
+                    {field.options.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
                   </select>
                 ) : (
-                  <input className="mt-2 w-full accent-teal-300" type="range" min={field.min} max={field.max} step={field.step} value={input[field.key]} onChange={(event) => update(field.key, Number(event.target.value))} />
+                  <input
+                    type="range"
+                    min={field.min}
+                    max={field.max}
+                    step={field.step}
+                    value={customInput[field.key]}
+                    onChange={(e) => updateCustom(field.key, Number(e.target.value))}
+                    className="w-full accent-blue-600 cursor-pointer"
+                  />
                 )}
-              </label>
+              </div>
             ))}
           </div>
-          <div className="mt-7 rounded-xl border border-dashed border-slate-700 p-4">
-            <label className="focus-ring block cursor-pointer">
-              <span className="text-sm font-medium text-white">Upload 20-feature CSV</span>
-              <span className="mt-1 block text-xs text-slate-500">CSV headers must match the 20 input names. Maximum 250 KB; first 20 rows are supported.</span>
-              <input aria-label="Upload CSV" className="mt-3 block w-full text-sm text-slate-400" type="file" accept=".csv,text/csv" onChange={onFile} />
-            </label>
-            {error && <p role="alert" className="mt-3 text-sm text-rose-300">{error}</p>}
-            <a className="mt-3 inline-block text-xs text-teal-300 underline" href={`data:text/csv;charset=utf-8,${encodeURIComponent(sampleCsv)}`} download="sample-vehicle-input.csv">Download sample CSV</a>
-          </div>
         </div>
+      )}
 
-        <div className="card p-6" aria-live="polite">
-          <div className="text-xs uppercase tracking-widest text-slate-500">Maintenance required probability</div>
-          <div className={`mt-3 text-5xl font-semibold ${displayedResult.probability >= .5 ? 'text-amber-200' : 'text-teal-200'}`}>
-            {result ? `${Math.round(displayedResult.probability * 100)}%` : '--'}
-          </div>
-          <p className="mt-3 text-sm text-slate-400">{result ? 'Live prediction from the trained model.' : 'Waiting for the prediction service...'}</p>
-          <Link
-            to="/prediction-analysis"
-            state={{ result: result ?? undefined }}
-            aria-disabled={!result}
-            className={`focus-ring mt-8 inline-flex rounded-lg px-4 py-2.5 text-sm font-semibold ${result ? 'bg-teal-300 text-slate-950 hover:bg-teal-200' : 'pointer-events-none bg-slate-800 text-slate-500'}`}
-          >
-            View SHAP analysis
-          </Link>
+      {/* Simple & Clean Vehicle Profile Selection Cards */}
+      <div className="space-y-3">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Featured Operational Vehicle Profiles</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {presetCards.map((v) => (
+            <div key={v.id} className="card p-5 bg-white border border-slate-200 shadow-sm hover:border-blue-300 transition-all flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-2xl">{v.icon}</span>
+                  <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${v.badgeColor}`}>
+                    {v.badge}
+                  </span>
+                </div>
+                <div className="font-bold text-slate-900 text-base">{v.name}</div>
+                <div className="text-xs font-medium text-slate-500 mt-0.5">{v.id} • {v.route}</div>
+                <p className="text-xs text-slate-600 mt-2.5 leading-relaxed">{v.desc}</p>
+              </div>
+
+              <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-400">20 CAN Telemetry Inputs</span>
+                <button
+                  type="button"
+                  onClick={() => launchDiagnosticReport(v.input, `${v.id} (${v.name})`)}
+                  className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-blue-700 transition-colors"
+                >
+                  <span>Run Full Diagnostic Report</span>
+                  <span>→</span>
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

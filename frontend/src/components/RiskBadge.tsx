@@ -8,41 +8,46 @@ interface RiskBadgeProps {
 
 const riskConfig = {
   low: {
-    bg: 'bg-emerald-400/10',
-    border: 'border-emerald-400/30',
-    text: 'text-emerald-300',
-    label: 'Low',
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-200',
+    text: 'text-emerald-700',
+    dot: 'bg-emerald-500',
+    label: 'Low Risk',
   },
   medium: {
-    bg: 'bg-yellow-400/10',
-    border: 'border-yellow-400/30',
-    text: 'text-yellow-300',
-    label: 'Medium',
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    text: 'text-amber-800',
+    dot: 'bg-amber-500',
+    label: 'Medium Risk',
   },
   high: {
-    bg: 'bg-orange-400/10',
-    border: 'border-orange-400/30',
-    text: 'text-orange-300',
-    label: 'High',
+    bg: 'bg-red-50',
+    border: 'border-red-200',
+    text: 'text-red-700',
+    dot: 'bg-red-500',
+    label: 'High Risk',
   },
   critical: {
-    bg: 'bg-rose-400/10',
-    border: 'border-rose-400/30',
-    text: 'text-rose-300',
-    label: 'Critical',
+    bg: 'bg-rose-100',
+    border: 'border-rose-300',
+    text: 'text-rose-800',
+    dot: 'bg-rose-600',
+    label: 'Critical Risk',
   },
 };
 
 export function RiskBadge({ level, size = 'md', showLabel = true }: RiskBadgeProps) {
-  const config = riskConfig[level];
+  const config = riskConfig[level] || riskConfig.low;
   const sizeClasses = {
-    sm: 'px-2.5 py-1 text-xs',
-    md: 'px-3 py-1.5 text-sm',
-    lg: 'px-4 py-2 text-base',
+    sm: 'px-2.5 py-0.5 text-xs',
+    md: 'px-3 py-1 text-xs font-semibold',
+    lg: 'px-3.5 py-1.5 text-sm font-bold',
   };
 
   return (
-    <span className={`inline-flex rounded-full border font-semibold ${config.bg} ${config.border} ${config.text} ${sizeClasses[size]}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full border shadow-2xs ${config.bg} ${config.border} ${config.text} ${sizeClasses[size]}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${config.dot}`}></span>
       {showLabel && config.label}
     </span>
   );

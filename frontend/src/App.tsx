@@ -1,26 +1,29 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
-import Demo from './pages/Demo';
+import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
+import Fleet from './pages/Fleet';
+import Demo from './pages/Demo';
+import DiagnosticReport from './pages/DiagnosticReport';
 import Maintenance from './pages/Maintenance';
-import About from './pages/About';
-import PredictionAnalysis from './pages/PredictionAnalysis';
+import RoadInsights from './pages/RoadInsights';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          {/* Main Routes */}
-          <Route path="/" element={<Dashboard />} />
+          {/* Logistics Fleet Routes */}
+          <Route path="/" element={<Landing />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/maintenance" element={<Maintenance />} />
-          <Route path="/about" element={<About />} />
-
+          <Route path="/fleet" element={<Fleet />} />
           <Route path="/vehicle-analysis" element={<Demo />} />
-          <Route path="/prediction-analysis" element={<PredictionAnalysis />} />
+          <Route path="/vehicle-analysis/report" element={<DiagnosticReport />} />
+          <Route path="/maintenance" element={<Maintenance />} />
+          <Route path="/road-insights" element={<RoadInsights />} />
 
-          <Route path="*" element={<Dashboard />} />
+          {/* Fallback Catch-All */}
+          <Route path="*" element={<Landing />} />
         </Route>
       </Routes>
     </BrowserRouter>

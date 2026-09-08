@@ -1,10 +1,10 @@
 export function Section({ eyebrow, title, description, children }: { eyebrow?: string; title: string; description?: string; children: React.ReactNode }) {
   return (
-    <section className="mx-auto max-w-7xl px-5 py-12 sm:py-16">
-      <div className="mb-8 max-w-3xl">
-        {eyebrow && <div className="mb-2 text-xs font-semibold uppercase tracking-[.18em] text-teal-300">{eyebrow}</div>}
-        <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">{title}</h2>
-        {description && <p className="mt-4 text-base leading-7 text-slate-400">{description}</p>}
+    <section className="mb-8">
+      <div className="mb-5 max-w-3xl">
+        {eyebrow && <div className="mb-1 text-xs font-bold uppercase tracking-wider text-blue-600">{eyebrow}</div>}
+        <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">{title}</h2>
+        {description && <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{description}</p>}
       </div>
       {children}
     </section>
