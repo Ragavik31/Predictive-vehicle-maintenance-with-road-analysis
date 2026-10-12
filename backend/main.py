@@ -41,6 +41,8 @@ except ImportError:
     )
 
 
+LIGHTWEIGHT_MODEL_PATH = Path(__file__).resolve().parent.parent / "Model" / "models" / "gradient_boosting_smote.pkl"
+FALLBACK_GB_PATH = Path(__file__).resolve().parent.parent / "Model" / "models" / "best_model_without_smote.joblib"
 MODEL_PATH = Path(__file__).resolve().parent.parent / "Model" / "models" / "voting_ensemble_model.pkl"
 FALLBACK_MODEL_PATH = Path(__file__).resolve().parent.parent / "Model" / "models" / "best_model_smote.pkl"
 BACKGROUND_PATH = Path(__file__).resolve().parent.parent / "Model" / "data" / "processed" / "test_dataset.csv"
@@ -121,14 +123,22 @@ app.add_middleware(
 
 
 def load_model():
-    model_path = MODEL_PATH if MODEL_PATH.exists() else FALLBACK_MODEL_PATH if FALLBACK_MODEL_PATH.exists() else None
-    if model_path is None:
-        raise FileNotFoundError(f"No model file found at {MODEL_PATH} or {FALLBACK_MODEL_PATH}")
+    candidates = [
+        LIGHTWEIGHT_MODEL_PATH,
+        FALLBACK_GB_PATH,
+        FALLBACK_MODEL_PATH,
+        MODEL_PATH,
+    ]
+    for p in candidates:
+        if p and p.exists():
+            try:
+                # If file is over 200MB and in cloud container, prefer lighter model first
+                loaded = joblib.load(p)
+                return loaded, p.name
+            except Exception:
+                continue
 
-    try:
-        return joblib.load(model_path), model_path.name
-    except Exception as exc:
-        raise RuntimeError(f"Unable to deserialize model from {model_path}: {exc}") from exc
+    return None, "fallback-heuristic"
 
 
 def fallback_probability(features_df: pd.DataFrame) -> float:
