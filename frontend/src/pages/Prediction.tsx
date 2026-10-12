@@ -461,6 +461,7 @@ export default function Prediction() {
           { feature: 'Diagnostic_Trouble_Code_Count', value: dtcCount, contribution: 0.026 },
           { feature: 'Engine_Temperature', value: engineTemp, contribution: 0.018 },
         ]).sort((a: any, b: any) => Math.abs(b.contribution) - Math.abs(a.contribution)),
+      });
     } catch (err) {
       console.warn('API call failed, running responsive local diagnostic estimator:', err);
       let score = 0;
