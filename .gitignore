@@ -89,3 +89,9 @@ outputs/metrics/
 Model/data/raw/
 Model/data/processed/
 *.csv
+
+# Temporary lock files & extra venvs
+~$*
+fixvenv/
+node_modules/
+appendix_intermediate_graphs/

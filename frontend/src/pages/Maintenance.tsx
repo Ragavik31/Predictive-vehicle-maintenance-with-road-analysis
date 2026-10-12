@@ -50,7 +50,7 @@ export default function Maintenance() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Maintenance Action Center</h1>
-        <p className="text-sm text-slate-500 mt-1">Component inspection protocols derived from risk scoring and SHAP factor analysis.</p>
+        <p className="text-sm text-slate-500 mt-1">Component inspection protocols derived from vehicle telemetry risk scoring.</p>
       </div>
 
       <div className="space-y-6">
@@ -121,17 +121,17 @@ export default function Maintenance() {
         <div className="grid gap-4 md:grid-cols-3">
           <div className="card p-5 bg-white border border-emerald-200 shadow-xs">
             <div className="text-xs font-bold uppercase tracking-wider text-emerald-700">Planned Inspection</div>
-            <div className="mt-2 text-2xl font-bold text-slate-900">$250 – $800</div>
+            <div className="mt-2 text-2xl font-bold text-slate-900">₹20,000 – ₹65,000</div>
             <p className="mt-1 text-xs text-slate-500">Targeted component swap</p>
           </div>
           <div className="card p-5 bg-white border border-amber-200 shadow-xs">
             <div className="text-xs font-bold uppercase tracking-wider text-amber-800">Unplanned Roadside Service</div>
-            <div className="mt-2 text-2xl font-bold text-slate-900">$2,400 – $6,000</div>
+            <div className="mt-2 text-2xl font-bold text-slate-900">₹1,80,000 – ₹4,50,000</div>
             <p className="mt-1 text-xs text-slate-500">Emergency towing & overtime labor</p>
           </div>
           <div className="card p-5 bg-white border border-red-200 shadow-xs">
             <div className="text-xs font-bold uppercase tracking-wider text-red-700">Catastrophic Engine Failure</div>
-            <div className="mt-2 text-2xl font-bold text-slate-900">$12,000 – $28,000</div>
+            <div className="mt-2 text-2xl font-bold text-slate-900">₹9,00,000 – ₹22,00,000</div>
             <p className="mt-1 text-xs text-slate-500">Complete block / transmission replacement</p>
           </div>
         </div>

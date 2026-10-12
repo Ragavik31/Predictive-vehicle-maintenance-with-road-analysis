@@ -1,6 +1,32 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchPlatformStats, type PlatformStats } from '../lib/api';
 
 export default function Landing() {
+  const [stats, setStats] = useState<PlatformStats>({
+    activeFleetTracked: '20',
+    diagnosticAccuracy: '94.1%',
+    unscheduledDowntimeSaved: '384+ hrs',
+    inspectionsDirected: '48',
+    totalRoutesMonitored: 6,
+    avgFleetRiskScore: '54.2%',
+    flaggedVehicles: 8,
+    optimalVehicles: 7,
+  });
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchPlatformStats(controller.signal)
+      .then((data) => {
+        if (data && data.activeFleetTracked) {
+          setStats(data);
+        }
+      })
+      .catch(() => null);
+
+    return () => controller.abort();
+  }, []);
+
   return (
     <div className="space-y-10 py-2">
       {/* Hero Banner */}
@@ -42,10 +68,10 @@ export default function Landing() {
       {/* Quick Metrics Bar */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: 'Active Fleet Tracked', value: '1,247', detail: 'Real-time telemetry stream', icon: '🚚' },
-          { label: 'System Diagnostic Accuracy', value: '98.4%', detail: 'Predictive Intelligence Engine', icon: '🎯' },
-          { label: 'Unscheduled Downtime Saved', value: '420+ hrs', detail: 'Quarterly breakdown prevention', icon: '⏱️' },
-          { label: 'Component Inspections Directed', value: '187', detail: 'High-precision maintenance tasks', icon: '🔧' },
+          { label: 'Active Fleet Tracked', value: stats.activeFleetTracked, detail: 'Real-time telemetry stream', icon: '🚚' },
+          { label: 'System Diagnostic Accuracy', value: stats.diagnosticAccuracy, detail: 'Holdout Model Accuracy', icon: '🎯' },
+          { label: 'Unscheduled Downtime Saved', value: stats.unscheduledDowntimeSaved, detail: 'Predictive breakdown prevention', icon: '⏱️' },
+          { label: 'Component Inspections Directed', value: stats.inspectionsDirected, detail: 'Targeted maintenance tasks', icon: '🔧' },
         ].map((item, i) => (
           <div key={i} className="card p-5 bg-white border border-slate-200 shadow-xs">
             <div className="flex items-center justify-between">
@@ -150,14 +176,14 @@ export default function Landing() {
 
         <div className="card p-6 bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
           <div>
-            <div className="text-2xl mb-3">🛣️</div>
-            <h3 className="font-bold text-slate-900 text-base">Road & Terrain Stress Analysis</h3>
+            <div className="text-2xl mb-3">🔧</div>
+            <h3 className="font-bold text-slate-900 text-base">Prescriptive Maintenance Protocols</h3>
             <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-              Correlate road surface roughness indices, pothole frequencies, and weather conditions directly with accelerated mechanical wear.
+              Targeted component-level inspection protocols derived from vehicle telemetry risk scoring to prevent roadside breakdowns.
             </p>
           </div>
-          <Link to="/road-insights" className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700">
-            <span>Explore Road Impact</span>
+          <Link to="/maintenance" className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700">
+            <span>View Maintenance Protocols</span>
             <span>→</span>
           </Link>
         </div>

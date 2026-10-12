@@ -10,7 +10,7 @@ import { MaintenanceRecommendation } from '../components/MaintenanceRecommendati
 const SCAN_PHASES = [
   { progress: 25, label: 'Phase 1/4: Ingesting 20 CAN bus telemetry parameters...', icon: '📡' },
   { progress: 55, label: 'Phase 2/4: Correlating road surface roughness & terrain stress metrics...', icon: '🛣️' },
-  { progress: 82, label: 'Phase 3/4: Computing risk probability & SHAP factor attributions...', icon: '🧠' },
+  { progress: 82, label: 'Phase 3/4: Computing risk probability & stress indicators...', icon: '🧠' },
   { progress: 100, label: 'Phase 4/4: Generating targeted component maintenance checklist...', icon: '🛠️' },
 ];
 
@@ -81,15 +81,6 @@ export default function DiagnosticReport() {
   const riskLvl = (activeRes?.risk_level?.toLowerCase() as any) || (prob > 0.7 ? 'high' : prob > 0.4 ? 'medium' : 'low');
   const maintReq = prob >= 0.4 ? 'maintenance-likely' : 'no-maintenance';
 
-  const defaultContributions = [
-    { feature: 'Engine Temperature', value: input.engineTemp, contribution: (input.engineTemp - 90) * 0.02 },
-    { feature: 'Chassis Vibration', value: input.vibration, contribution: (input.vibration - 2.5) * 0.15 },
-    { feature: 'Road Roughness', value: input.roadConditions, contribution: (input.roadConditions - 2) * 0.1 },
-    { feature: 'DTC Code Count', value: input.diagnosticTroubleCodeCount, contribution: input.diagnosticTroubleCodeCount * 0.12 },
-    { feature: 'Sensor Loss Rate', value: input.sensorPacketLossRate, contribution: input.sensorPacketLossRate * 0.5 },
-  ];
-
-  const contributions = activeRes?.feature_contributions || activeRes?.contributions || defaultContributions;
   const inspectionAreas = activeRes?.recommendations || [
     'Engine Cooling System & Radiator Flush',
     'Chassis Suspension Bushes & Shock Absorbers',
@@ -198,16 +189,18 @@ export default function DiagnosticReport() {
             riskLevel={riskLvl}
           />
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* SHAP Factor Impact Breakdown */}
-            <FeatureContribution contributions={contributions} />
-
-            {/* Targeted Maintenance Recommendation Checklist */}
-            <MaintenanceRecommendation
-              priority={riskLvl}
-              inspectionAreas={inspectionAreas}
+          {/* Telemetry & Road Impact Factors (SHAP Explainability) */}
+          {(activeRes?.feature_contributions || activeRes?.contributions) && (
+            <FeatureContribution
+              contributions={activeRes.feature_contributions || activeRes.contributions || []}
             />
-          </div>
+          )}
+
+          {/* Targeted Maintenance Recommendation Checklist */}
+          <MaintenanceRecommendation
+            priority={riskLvl}
+            inspectionAreas={inspectionAreas}
+          />
 
           {/* Observed Telemetry Data Grid */}
           <div className="card p-6 bg-white border border-slate-200 shadow-sm">
