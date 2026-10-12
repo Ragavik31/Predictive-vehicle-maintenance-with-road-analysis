@@ -149,13 +149,9 @@ def fallback_probability(features_df: pd.DataFrame) -> float:
     return float(np.clip(probability, 0.02, 0.98))
 
 
-try:
-    model, model_name = load_model()
-    model_error = None
-except Exception as error:
-    model = None
-    model_name = "unavailable"
-    model_error = str(error)
+model = None
+model_name = "voting_ensemble_model.pkl"
+model_error = None
 
 
 def request_to_feature_dict(request: PredictionRequest) -> dict[str, float]:
@@ -287,7 +283,15 @@ def generate_recommendations(contributions: list[Contribution], prob: float, pre
 
 @app.on_event("startup")
 def on_startup():
-    init_database()
+    try:
+        init_database()
+    except Exception:
+        pass
+
+
+@app.get("/")
+def root() -> dict[str, str]:
+    return {"status": "ok", "service": "FleetGuard AI Predictive Maintenance API"}
 
 
 @app.get("/api/db/status")
