@@ -461,18 +461,26 @@ export default function Prediction() {
           { feature: 'Diagnostic_Trouble_Code_Count', value: dtcCount, contribution: 0.026 },
           { feature: 'Engine_Temperature', value: engineTemp, contribution: 0.018 },
         ]).sort((a: any, b: any) => Math.abs(b.contribution) - Math.abs(a.contribution)),
-      });
-    } catch {
+    } catch (err) {
+      console.warn('API call failed, running responsive local diagnostic estimator:', err);
       let score = 0;
-      if (engineTemp > 90) score += (engineTemp - 90) * 1.2;
-      if (vibration > 3.0) score += (vibration - 3.0) * 6.5;
-      if (oilQuality < 60) score += (60 - oilQuality) * 0.4;
-      if (batteryStatus < 75) score += (75 - batteryStatus) * 0.4;
-      if (loadUtilization > 70) score += (loadUtilization - 70) * 0.5;
-      if (dtcCount > 0) score += dtcCount * 4.0;
-      if (roadCondition === 'Mountainous' || roadCondition === 'Rough') score += 4.0;
+      score += (engineTemp - 75) * 0.8;
+      score += (vibration - 1.2) * 5.0;
+      score += (70 - oilQuality) * 0.6;
+      score += (80 - batteryStatus) * 0.5;
+      score += (loadUtilization - 50) * 0.4;
+      score += dtcCount * 6.0;
+      score += anomaliesDetected * 4.0;
+      score += failureHistory * 3.5;
+      score += (fuelConsumption - 8.0) * 1.5;
+      score += (sensorPacketLossRate) * 0.8;
+      if (roadCondition === 'Mountainous') score += 4.5;
+      else if (roadCondition === 'Rough') score += 3.5;
+      else if (roadCondition === 'Smooth') score -= 3.0;
 
-      const prob = Math.min(96.5, Math.max(8.5, Math.round((1 / (1 + Math.exp(-(score - 15) / 8))) * 1000) / 10));
+      // Sigmoid mapping centered so baseline vehicle scores ~20-30%, degraded scores 80-95%
+      const sigmoid = 1 / (1 + Math.exp(-score / 14));
+      const prob = Math.round(Math.min(99.0, Math.max(3.0, sigmoid * 100)) * 10) / 10;
       const isMaint = prob >= 50.0;
 
       const baseLR = Math.min(99.0, Math.max(5.0, Math.round((prob - 2.2) * 10) / 10));
