@@ -37,6 +37,9 @@ export function getApiBase(): string {
     const saved = localStorage.getItem('fleetguard_api_url');
     if (saved) return saved.replace(/\/+$/, '');
   }
+  if (import.meta.env.VITE_API_URL) {
+    return (import.meta.env.VITE_API_URL as string).replace(/\/+$/, '');
+  }
   return 'http://localhost:8000/api';
 }
 
